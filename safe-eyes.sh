@@ -3,26 +3,22 @@
 ##################################################################################
 # Simple break reminder based on YAD. Inspired by https://github.com/slgobinath/SafeEyes.
 # Motivation: Limit number of dependencies and be simpler than original SafeEyes.
-# Usage: ./safe-eyes.sh
-#
-# Features:
-# - configurable duration of work and break sessions (in source code)
-# - OS can be locked during break session (use shortcut Win+L)
-# - break dialog that forces rest, i.e. fullscreen, no "skip" button, cannot minimize (currently only x11 is supported)
-# - beep sound after end of break
-# - break session is AUTOMATICALLY skipped during calls when web camera is used
-#
-# Nice to have (not implemented):
-# - measure duration of work session since wake-up from screen lock
-# - get rid of x11 workaround preventing skipping break
-# - "lock screen" button on break dialog?
-# - optional "skip" button? (let user decide)
+# Usage: ./safe-eyes.sh start
 ##################################################################################
 
 # ----------- CONFIG ---------------
 WORK_TIME_IN_SECONDS=$((20*60))
 BREAK_TIME_IN_SECONDS=$((1*60))
 # ----------------------------------
+
+_break_countdown(){
+    for i in `seq 1 $BREAK_TIME_IN_SECONDS`;
+    do
+        echo $((100*$i/$BREAK_TIME_IN_SECONDS))
+        sleep 1
+    done
+    return 1;
+}
 
 _break_dialog() {
   if [[ `_is_webcam_used` == 1 ]]; then
@@ -33,9 +29,9 @@ _break_dialog() {
   # TODO "GDK_BACKEND=x11" is workaround on Wayland to prevent minimizing break dialog (i.e. skip break) trough shortcuts like "showing desktop (Win+D)"
   # original "safeeyes" locks keyboard: https://github.com/slgobinath/SafeEyes/blob/master/safeeyes/ui/break_screen.py#L239
   # possible solution: fork process to focus on break dialog using "wmctrl" every 1s
-  GDK_BACKEND=x11 yad --no-escape --sticky --on-top  --undecorated --skip-taskbar --fullscreen --timeout="${BREAK_TIME_IN_SECONDS}" \
-  --no-buttons \
-  --text="\n\n${BREAK_TIME_IN_SECONDS} seconds break" --text-align=center --css='*{background-color: #31363b; color: #fcfcfc; font: 25px Sans;}'
+  _break_countdown | GDK_BACKEND=x11 yad --progress --no-escape --sticky --on-top  --undecorated --skip-taskbar --fullscreen  --timeout="${BREAK_TIME_IN_SECONDS}" \
+  --text="\n${BREAK_TIME_IN_SECONDS} seconds break"  --hide-text --text-align=center --css='*{background-color: #31363b; color: #fcfcfc; font: 25px Sans;}' \
+  --no-buttons
 
   _beep_end_of_break
 }
