@@ -21,8 +21,8 @@ _break_countdown(){
 }
 
 _break_dialog() {
-  if [[ `_is_webcam_used` == 1 ]]; then
-    echo "Webcam used - skipping break"
+  if [[ `_is_webcam_used` == 1 || `_is_microphone_used` == 1 ]]; then
+    echo "Webcam or microphone used - skipping break"
     return
   fi
 
@@ -39,6 +39,11 @@ _break_dialog() {
 # returns 1 if true, 0 otherwise
 _is_webcam_used() {
   lsmod | grep ^uvcvideo | rev | cut -d' ' -f-1
+}
+
+# returns 1 if true, 0 otherwise
+_is_microphone_used() {
+  pactl list sources | grep -c RUNNING
 }
 
 _beep_end_of_break() {
