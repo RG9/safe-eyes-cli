@@ -1,10 +1,10 @@
 #!/bin/bash
 
-##################################################################################
+#########################################################################################
 # Simple break reminder based on YAD. Inspired by https://github.com/slgobinath/SafeEyes.
 # Motivation: Limit number of dependencies and be simpler than original SafeEyes.
 # Usage: ./safe-eyes.sh start
-##################################################################################
+#########################################################################################
 
 # ----------- CONFIG ---------------
 WORK_TIME_IN_SECONDS=$((20*60))
@@ -18,14 +18,13 @@ _break_countdown(){
         if (( BREAK_TIME_IN_SECONDS > LAST_LOCK )); then
           pkill -f "safe-eyes-break"
         fi
-        echo $((100*$i/$BREAK_TIME_IN_SECONDS))
+        echo $((100*i/BREAK_TIME_IN_SECONDS))
         sleep 1
     done
-    return 1;
 }
 
 _break_dialog() {
-  if [[ `_is_webcam_used` == 1 || `_is_microphone_used` == 1 ]]; then
+  if [[ $(_is_webcam_used) == 1 || $(_is_microphone_used) == 1 ]]; then
     echo "Webcam or microphone used - skipping break"
     return
   fi
