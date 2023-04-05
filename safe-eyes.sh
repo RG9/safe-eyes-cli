@@ -6,10 +6,13 @@
 # Usage: ./safe-eyes.sh start
 #########################################################################################
 
-# ----------- CONFIG ---------------
-WORK_TIME_IN_SECONDS=$((20 * 60))
-BREAK_TIME_IN_SECONDS=$((1 * 60))
-# ----------------------------------
+MY_PATH="$(dirname $0)"
+
+if [ ! -f $MY_PATH/config-current.sh ]; then
+  # copy default config if not exists
+  cp $MY_PATH/config-default.sh $MY_PATH/config-current.sh
+fi
+source $MY_PATH/config-current.sh
 
 DEBUG=false
 DEBUG_LOG_PATH=$MY_PATH/debug.log
@@ -112,13 +115,12 @@ stop)
   pkill -e -9 -f "$(basename $0) start"
   exit 0
   ;;
+config)
+  vi config-current.sh
+  exit 0
+  ;;
 help | --help | -help | "") # prints this help
-  echo "Usage: $0 [start|stop]"
-  echo
-  echo "Current configuration:"
-  echo "\$WORK_TIME_IN_SECONDS: $WORK_TIME_IN_SECONDS"
-  echo "\$BREAK_TIME_IN_SECONDS: $BREAK_TIME_IN_SECONDS"
-  echo "(edit source code in order to change config)"
+  echo "Usage: $0 [start|stop|config]"
   exit 0
   ;;
 esac
