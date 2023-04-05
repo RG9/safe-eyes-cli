@@ -11,6 +11,9 @@ WORK_TIME_IN_SECONDS=$((20 * 60))
 BREAK_TIME_IN_SECONDS=$((1 * 60))
 # ----------------------------------
 
+DEBUG=false
+DEBUG_LOG_PATH=$MY_PATH/debug.log
+
 _break_countdown() {
   for i in $(seq 1 $BREAK_TIME_IN_SECONDS); do
     LAST_LOCK=$(_seconds_since_last_event 'screenlocker')
@@ -22,11 +25,21 @@ _break_countdown() {
   done
 }
 
+_log() {
+  if ${DEBUG}; then
+    local msg="$1"
+    echo "$(date +"%Y-%m-%d %H:%M:%S") - $msg" >>$DEBUG_LOG_PATH
+  fi
+}
+
 _break_dialog() {
+
   if [[ $(_is_webcam_used) == 1 || $(_is_microphone_used) == 1 ]]; then
-    echo "Webcam or microphone used - skipping break"
+    _log "Webcam or microphone used - skipping break"
     return
   fi
+
+  _log "break"
 
   # TODO "GDK_BACKEND=x11" is workaround on Wayland to prevent minimizing break dialog (i.e. skip break) trough shortcuts like "showing desktop (Win+D)"
   # original "safeeyes" locks keyboard: https://github.com/slgobinath/SafeEyes/blob/master/safeeyes/ui/break_screen.py#L239
@@ -66,12 +79,13 @@ _postpone_break_if_screen_was_locked() {
   LAST_LOGIN=$(_seconds_since_last_event 'USER_AUTH')
   POSTPONE=$((WORK_TIME_IN_SECONDS - LAST_LOGIN))
   if ((POSTPONE > 0)); then
-    echo "Detected locked screen - postponing break by $POSTPONE seconds"
+    _log "Detected locked screen - postponing break by $POSTPONE seconds"
     sleep ${POSTPONE}
   fi
 }
 
 _main_program() {
+  _log "Program has started"
   while true; do
     sleep ${WORK_TIME_IN_SECONDS}
 
@@ -86,6 +100,10 @@ start)
   if [[ $(pgrep -cf "$(basename $0) start") -gt 1 ]]; then
     echo "Already started - skipping"
     exit 0
+  fi
+  if [[ "$2" == "--debug" ]]; then
+    echo "Program will save logs at $DEBUG_LOG_PATH"
+    DEBUG=true
   fi
   _main_program 2>&1 & # run in background
   exit 0
