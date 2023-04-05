@@ -120,7 +120,7 @@ config)
   exit 0
   ;;
 help | --help | -help | "") # prints this help
-  echo "Usage: $0 [start|stop|config]"
+  echo "Usage: $0 [start (--debug)|stop|config]"
   exit 0
   ;;
 esac
