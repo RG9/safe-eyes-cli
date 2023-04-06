@@ -4,6 +4,9 @@
 
 `safe-eyes-cli` enforces regular, **mandatory** breaks from computer work to prevent eye strain and promote well-being.
 
+It has one unique feature that other programs lack:
+- automatically pausing during calls
+
 Motivation: Be simpler (fewer dependencies) than original SafeEyes and pause during calls.
 
 ## Dependencies
@@ -72,7 +75,3 @@ However, in certain situations, the following features may be useful:
 - https://github.com/hovancik/stretchly
     - \+ distributed as a Flatpack
     - \- why it starts so many processes in background?
-
-Both applications are great, but lacks some important feature:
-
-- pause automatically during calls
