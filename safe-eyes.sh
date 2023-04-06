@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#########################################################################################
-# Simple break reminder based on YAD. Inspired by https://github.com/slgobinath/SafeEyes.
-# Motivation: Limit number of dependencies and be simpler than original SafeEyes.
+#############################################################################################
+# "Strict" break reminder based on YAD. Inspired by https://github.com/slgobinath/SafeEyes.
+# Motivation: Be simpler (fewer dependencies) than original SafeEyes and pause during calls.
 # Usage: ./safe-eyes.sh start
-#########################################################################################
+#############################################################################################
 
 MY_PATH="$(dirname $0)"
 
@@ -17,6 +17,13 @@ source $MY_PATH/config-current.sh
 DEBUG=false
 DEBUG_LOG_PATH=$MY_PATH/debug.log
 
+_log() {
+  if ${DEBUG}; then
+    local msg="$1"
+    echo "$(date +"%Y-%m-%d %H:%M:%S") - $msg" >>$DEBUG_LOG_PATH
+  fi
+}
+
 _break_countdown() {
   for i in $(seq 1 $BREAK_TIME_IN_SECONDS); do
     LAST_LOCK=$(_seconds_since_last_event 'screenlocker')
@@ -28,15 +35,7 @@ _break_countdown() {
   done
 }
 
-_log() {
-  if ${DEBUG}; then
-    local msg="$1"
-    echo "$(date +"%Y-%m-%d %H:%M:%S") - $msg" >>$DEBUG_LOG_PATH
-  fi
-}
-
 _break_dialog() {
-
   if [[ $(_is_webcam_used) == 1 || $(_is_microphone_used) == 1 ]]; then
     _log "Webcam or microphone used - skipping break"
     return
