@@ -97,6 +97,16 @@ _main_program() {
   done
 }
 
+# directly invoke functions for testing purpose
+if [[ "$1" == "--test" ]]; then # first param is --test and is declared as function
+  if declare -f "$2" >/dev/null; then
+    "$2" # call the function
+  else
+    echo "Unknown function: $2"
+  fi
+  exit 0
+fi
+
 case "$1" in
 start)
   if [[ $(pgrep -cf "$(basename $0) start") -gt 1 ]]; then
@@ -119,7 +129,7 @@ config)
   exit 0
   ;;
 help | --help | -help | "") # prints this help
-  echo "Usage: $0 [start (--debug)|stop|config]"
+  echo "Usage: $0 [start (--debug)|stop|config|--test {function name}]"
   exit 0
   ;;
 esac
