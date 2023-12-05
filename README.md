@@ -48,8 +48,8 @@ However, in certain situations, the following features may be useful:
 
 ## Features
 
-- **break dialog/notification that enforces rest**, i.e. fullscreen mode, no "skip" button, prevent minimizing (
-  currently only x11 is supported)
+- **break dialog/notification that enforces rest**, i.e. fullscreen mode, no "skip" button, prevents minimizing (
+  currently only x11 is supported). Unfortunately can be closed with `Alt+F4` shortcut (disable this shortcut if needed).
 - **break is postponed if screen was locked** (also works after hibernation)
 - **break session is AUTOMATICALLY skipped during calls** when webcam or microphone is in use
 - OS can be locked during break session (use shortcut Win+L)
